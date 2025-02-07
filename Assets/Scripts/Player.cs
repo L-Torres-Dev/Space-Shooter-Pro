@@ -1,30 +1,29 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    [SerializeField]
-    private float speed = 3.5f;
+
+    [SerializeField] private float speed = 3.5f;
+    [SerializeField] private GameObject laserPrefab;
+    [SerializeField] private float fireRate = .5f;
+    private float canFire = -1;
 
     private float horizontalInput;
     private float verticalInput;
 
     private float horizontalBound = 12.15f;
     private float verticalBound = -3.8f;
-    //Start is called before the first frame update
     void Start()
     {
-        //take the current position = new position (0, 0, 0)
         transform.position = new Vector3(0, 0, 0);
     }
 
-    // Update is called once per frame
     void Update()
     {
         CalculateMovement();
+        if (Input.GetKeyDown(KeyCode.Space) && Time.time > canFire)
+            Shoot();
     }
-
     private void CalculateMovement()
     {
         horizontalInput = Input.GetAxis("Horizontal");
@@ -48,5 +47,12 @@ public class Player : MonoBehaviour
         }
 
         transform.position = clampedPos;
+    }
+    private void Shoot()
+    {
+        canFire = Time.time + fireRate;
+        Vector2 laserPos = transform.position;
+        laserPos.y += .8f;
+        Instantiate(laserPrefab, laserPos, Quaternion.identity);
     }
 }
