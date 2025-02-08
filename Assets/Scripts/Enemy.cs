@@ -5,7 +5,7 @@ public class Enemy : MonoBehaviour
     [SerializeField] float speed = 3.5f;
     [SerializeField] float respawnYPos = 8;
 
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.TryGetComponent<Player>(out Player player))
         {
