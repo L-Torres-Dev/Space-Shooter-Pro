@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public class Player : MonoBehaviour
 {
@@ -32,6 +33,9 @@ public class Player : MonoBehaviour
 
         if(health <= 0)
         {
+            SpawnManager spawnManager = GameObject.FindObjectOfType<SpawnManager>();
+            if (spawnManager != null)
+                spawnManager.OnPlayerDeath();
             Destroy(this.gameObject);
         }
     }
