@@ -2,9 +2,10 @@
 
 public class Player : MonoBehaviour
 {
-
+    [SerializeField] private int health = 3;
     [SerializeField] private float speed = 3.5f;
     [SerializeField] private GameObject laserPrefab;
+
     [SerializeField] private float fireRate = .5f;
     private float canFire = -1;
 
@@ -17,13 +18,24 @@ public class Player : MonoBehaviour
     {
         transform.position = new Vector3(0, 0, 0);
     }
-
     void Update()
     {
         CalculateMovement();
+
         if (Input.GetKeyDown(KeyCode.Space) && Time.time > canFire)
             Shoot();
     }
+
+    public void Damage()
+    {
+        health--;
+
+        if(health <= 0)
+        {
+            Destroy(this.gameObject);
+        }
+    }
+
     private void CalculateMovement()
     {
         horizontalInput = Input.GetAxis("Horizontal");
