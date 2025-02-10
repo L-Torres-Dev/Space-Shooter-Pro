@@ -1,74 +1,78 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    [SerializeField] private int health = 3;
-    [SerializeField] private float speed = 3.5f;
-    [SerializeField] private GameObject laserPrefab;
+    [SerializeField] private int _health = 3;
+    [SerializeField] private float _speed = 3.5f;
+    [SerializeField] private GameObject _laserPrefab;
 
-    [SerializeField] private float fireRate = .5f;
-    private float canFire = -1;
+    [SerializeField] private float _fireRate = .5f;
+    [SerializeField] private float _laserOffset = .8f;
 
-    private float horizontalInput;
-    private float verticalInput;
+    private float _canFire = -1;
 
-    private float horizontalBound = 12.15f;
-    private float verticalBound = -3.8f;
+    private float _horizontalInput;
+    private float _verticalInput;
+
+    private float _horizontalBound = 12.15f;
+    private float _verticalBound = -4.89f;
+
+    Vector2 _direction, _clampedPos;
+
     void Start()
     {
         transform.position = new Vector3(0, 0, 0);
     }
+
     void Update()
     {
         CalculateMovement();
 
-        if (Input.GetKeyDown(KeyCode.Space) && Time.time > canFire)
+        if (Input.GetKeyDown(KeyCode.Space) && Time.time > _canFire)
             Shoot();
     }
+    private void CalculateMovement()
+    {
+        _horizontalInput = Input.GetAxis("Horizontal");
+        _verticalInput = Input.GetAxis("Vertical");
 
+        _direction = new Vector2(_horizontalInput, _verticalInput).normalized;
+
+        transform.Translate(_direction * Time.deltaTime * _speed);
+
+        _clampedPos = new Vector2(transform.position.x, transform.position.y);
+
+        _clampedPos.y = Mathf.Clamp(_clampedPos.y, _verticalBound, 0);
+
+        if (_clampedPos.x > _horizontalBound)
+        {
+            _clampedPos.x = -_horizontalBound;
+        }
+        else if (_clampedPos.x < -_horizontalBound)
+        {
+            _clampedPos.x = _horizontalBound;
+        }
+
+        transform.position = _clampedPos;
+    }
+
+    private void Shoot()
+    {
+        _canFire = Time.time + _fireRate;
+        Vector2 laserPos = transform.position;
+        laserPos.y += _laserOffset;
+        Instantiate(_laserPrefab, laserPos, Quaternion.identity);
+    }
     public void Damage()
     {
-        health--;
+        _health--;
 
-        if(health <= 0)
+        if(_health <= 0)
         {
             SpawnManager spawnManager = GameObject.FindObjectOfType<SpawnManager>();
             if (spawnManager != null)
                 spawnManager.OnPlayerDeath();
             Destroy(this.gameObject);
         }
-    }
-
-    private void CalculateMovement()
-    {
-        horizontalInput = Input.GetAxis("Horizontal");
-        verticalInput = Input.GetAxis("Vertical");
-
-        Vector2 direction = new Vector2(horizontalInput, verticalInput).normalized;
-
-        transform.Translate(direction * Time.deltaTime * speed);
-
-        Vector2 clampedPos = new Vector2(transform.position.x, transform.position.y);
-
-        clampedPos.y = Mathf.Clamp(clampedPos.y, verticalBound, 0);
-
-        if (clampedPos.x > horizontalBound)
-        {
-            clampedPos.x = -horizontalBound;
-        }
-        else if (clampedPos.x < -horizontalBound)
-        {
-            clampedPos.x = horizontalBound;
-        }
-
-        transform.position = clampedPos;
-    }
-    private void Shoot()
-    {
-        canFire = Time.time + fireRate;
-        Vector2 laserPos = transform.position;
-        laserPos.y += .8f;
-        Instantiate(laserPrefab, laserPos, Quaternion.identity);
-    }
+    }    
 }

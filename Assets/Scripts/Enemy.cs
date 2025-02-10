@@ -2,12 +2,23 @@
 
 public class Enemy : MonoBehaviour
 {
-    [SerializeField] float speed = 3.5f;
-    [SerializeField] float respawnYPos = 8;
+    [SerializeField] float _speed = 3.5f;
+    [SerializeField] float _respawnYPos = 8;
 
+    void Update()
+    {
+        transform.Translate(Vector3.down * (_speed * Time.deltaTime));
+
+        if (transform.position.y < -6f)
+        {
+            float x = Random.Range(-9, 9f);
+
+            transform.position = new Vector3(x, _respawnYPos, 0);
+        }
+    }
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.TryGetComponent<Player>(out Player player))
+        if (other.TryGetComponent(out Player player))
         {
             player.Damage();
             Destroy(this.gameObject);
@@ -17,18 +28,6 @@ public class Enemy : MonoBehaviour
         {
             Destroy(laser.gameObject);
             Destroy(this.gameObject);
-        }
-    }
-
-    void Update()
-    {
-        transform.Translate(new Vector3(0, -speed, 0) * Time.deltaTime);
-
-        if (transform.position.y < -6f)
-        {
-            float x = Random.Range(-9, 9f);
-
-            transform.position = new Vector3(x, respawnYPos, 0);
         }
     }
 }
