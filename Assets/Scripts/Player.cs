@@ -13,7 +13,7 @@ public class Player : MonoBehaviour
     [SerializeField] private float _powerUpTimer = 5f;
     [SerializeField] private float _fireRate = .5f;
     [SerializeField] private float _laserOffset = .8f;
-    [SerializeField] private float speedBoostMultiplier = 2;
+    [SerializeField] private float _speedBoostMultiplier = 2;
 
     private bool _shieldUp;
     private float _baseSpeed;
@@ -120,7 +120,7 @@ public class Player : MonoBehaviour
     }
     public IEnumerator CO_SpeedPowerUp()
     {
-        _speed = _baseSpeed * speedBoostMultiplier;
+        _speed = _baseSpeed * _speedBoostMultiplier;
         yield return new WaitForSeconds(_powerUpTimer);
         _speed = _baseSpeed;
     }
