@@ -21,7 +21,7 @@ public class UIManager : MonoBehaviour
     {
         if(_gameOver && Input.GetKeyDown(KeyCode.R))
         {
-            SceneManager.LoadScene("Game");
+            SceneManager.LoadScene("Game", LoadSceneMode.Single);
         }
     }
     public void UpdateScore(int score)
