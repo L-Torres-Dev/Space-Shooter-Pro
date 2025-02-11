@@ -5,6 +5,8 @@ public class PowerUp : MonoBehaviour
     [SerializeField] private float _speed = 3;
     [SerializeField] private float _verticalBound = -7.5f;
 
+    [SerializeField] private int PowerID;
+
     void Update()
     {
         transform.Translate(Vector3.down * (_speed * Time.deltaTime));
@@ -20,7 +22,22 @@ public class PowerUp : MonoBehaviour
     {
         if(collision.TryGetComponent(out Player player))
         {
-            player.TripleShotPowerUp();
+            switch (PowerID)
+            {
+                case 0:
+                    player.TripleShotPowerUp();
+                    break;
+                case 1:
+                    player.SpeedPowerUP();
+                    break;
+                case 2:
+                    player.ShieldPowerUp();
+                    break;
+                default:
+                    print($"Power Up doesn't exist");
+                    break;
+            }
+
             Destroy(this.gameObject);
         }
     }

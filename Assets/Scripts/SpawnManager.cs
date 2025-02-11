@@ -4,9 +4,9 @@ using UnityEngine;
 public class SpawnManager : MonoBehaviour
 {
     [SerializeField] GameObject _enemyPrefab;
-    [SerializeField] GameObject _tripleShotPowerUpPrefab;
     [SerializeField] Transform _enemyContainer;
     [SerializeField] float _respawnYPos = 8;
+    [SerializeField] private GameObject[] _powerups;
 
     private bool _stopSpawning = false;
     void Start()
@@ -32,9 +32,11 @@ public class SpawnManager : MonoBehaviour
     {
         float spawnX;
         float randomInterval;
+        int powerUpIndex;
         Vector3 spawnPoint = Vector3.zero;
         while (_stopSpawning == false) 
         {
+            powerUpIndex = Random.Range(0, _powerups.Length);
             randomInterval = Random.Range(3, 7f);
             spawnX = Random.Range(-9, 9f);
             spawnPoint.x = spawnX;
@@ -42,7 +44,7 @@ public class SpawnManager : MonoBehaviour
 
             yield return new WaitForSeconds(randomInterval);
 
-            Instantiate(_tripleShotPowerUpPrefab, spawnPoint, Quaternion.identity);
+            Instantiate(_powerups[powerUpIndex], spawnPoint, Quaternion.identity);
         }    
     }
     public void OnPlayerDeath()

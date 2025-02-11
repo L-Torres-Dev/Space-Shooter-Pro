@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿using System.Collections;   
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -7,12 +7,16 @@ public class Player : MonoBehaviour
     [SerializeField] private float _speed = 3.5f;
     [SerializeField] private GameObject _laserPrefab;
     [SerializeField] private GameObject _tripleShotPrefab;
+    [SerializeField] private GameObject _playerShield;
 
     [SerializeField] private bool _tripleShot;
     [SerializeField] private float _powerUpTimer = 5f;
     [SerializeField] private float _fireRate = .5f;
     [SerializeField] private float _laserOffset = .8f;
+    [SerializeField] private float speedBoostMultiplier = 2;
 
+    private bool _shieldUp;
+    private float _baseSpeed;
     private float _canFire = -1;
 
     private float _horizontalInput;
@@ -23,11 +27,12 @@ public class Player : MonoBehaviour
 
     Vector2 _direction, _clampedPos;
 
-    
+    Coroutine _tripleShotRoutine, _speedRoutine, _shieldRoutine;
 
     void Start()
     {
         transform.position = new Vector3(0, 0, 0);
+        _baseSpeed = _speed;
     }
 
     void Update()
@@ -79,6 +84,11 @@ public class Player : MonoBehaviour
     }
     public void Damage()
     {
+        if (_shieldUp)
+        {
+            DeactivateShield();
+            return;
+        }
         _health--;
 
         if(_health <= 0)
@@ -91,12 +101,38 @@ public class Player : MonoBehaviour
     }  
     public void TripleShotPowerUp()
     {
-        StartCoroutine(CO_TripleShotPowerUp());
+        if(_tripleShotRoutine != null)
+            StopCoroutine(_tripleShotRoutine);
+
+        _tripleShotRoutine = StartCoroutine(CO_TripleShotPowerUp());
     }
     public IEnumerator CO_TripleShotPowerUp()
     {
         _tripleShot = true;
         yield return new WaitForSeconds(_powerUpTimer);
         _tripleShot = false;
+    }
+    public void SpeedPowerUP()
+    {
+        if (_speedRoutine != null)
+            StopCoroutine(_speedRoutine);
+        _speedRoutine = StartCoroutine(CO_SpeedPowerUp());
+    }
+    public IEnumerator CO_SpeedPowerUp()
+    {
+        _speed = _baseSpeed * speedBoostMultiplier;
+        yield return new WaitForSeconds(_powerUpTimer);
+        _speed = _baseSpeed;
+    }
+    public void ShieldPowerUp()
+    {
+        _shieldUp = true;
+        _playerShield.gameObject.SetActive(true);
+        
+    }
+    public void DeactivateShield()
+    {
+        _shieldUp = false;
+        _playerShield.gameObject.SetActive(false);
     }
 }
