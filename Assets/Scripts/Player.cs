@@ -8,12 +8,14 @@ public class Player : MonoBehaviour
     [SerializeField] private GameObject _laserPrefab;
     [SerializeField] private GameObject _tripleShotPrefab;
     [SerializeField] private GameObject _playerShield;
+    [SerializeField] private UIManager _UIManager;
 
     [SerializeField] private bool _tripleShot;
     [SerializeField] private float _powerUpTimer = 5f;
     [SerializeField] private float _fireRate = .5f;
     [SerializeField] private float _laserOffset = .8f;
     [SerializeField] private float _speedBoostMultiplier = 2;
+    [SerializeField] private int _score;
 
     private bool _shieldUp;
     private float _baseSpeed;
@@ -90,12 +92,15 @@ public class Player : MonoBehaviour
             return;
         }
         _health--;
+        
+        _UIManager.UpdateLives(_health);
 
-        if(_health <= 0)
+        if (_health <= 0)
         {
             SpawnManager spawnManager = GameObject.FindObjectOfType<SpawnManager>();
             if (spawnManager != null)
                 spawnManager.OnPlayerDeath();
+            _UIManager.GameOver();
             Destroy(this.gameObject);
         }
     }  
@@ -135,4 +140,10 @@ public class Player : MonoBehaviour
         _shieldUp = false;
         _playerShield.gameObject.SetActive(false);
     }
+    public void AddScore(int score)
+    {
+        _score += score;
+    }
+
+    public int Score => _score;
 }

@@ -4,7 +4,13 @@ public class Enemy : MonoBehaviour
 {
     [SerializeField] float _speed = 3.5f;
     [SerializeField] float _respawnYPos = 8;
+    [SerializeField] int _scoreReward = 10;
 
+    UIManager _manager;
+    private void Awake()
+    {
+        _manager = FindObjectOfType<UIManager>();
+    }
     void Update()
     {
         transform.Translate(Vector3.down * (_speed * Time.deltaTime));
@@ -26,8 +32,9 @@ public class Enemy : MonoBehaviour
 
         else if (other.TryGetComponent(out Laser laser))
         {
+            _manager.UpdateScore(_scoreReward);
             Destroy(laser.gameObject);
-            Destroy(this.gameObject);
+            Destroy(this.gameObject);            
         }
     }
 }

@@ -99,7 +99,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _speed: 3
   _verticalBound: -7.5
-  PowerID: 2
+  _powerID: 2
 --- !u!95 &7547636243051021352
 Animator:
   serializedVersion: 3
