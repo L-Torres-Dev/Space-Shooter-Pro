@@ -8,6 +8,8 @@ public class Player : MonoBehaviour
     [SerializeField] private GameObject _laserPrefab;
     [SerializeField] private GameObject _tripleShotPrefab;
     [SerializeField] private GameObject _playerShield;
+    [SerializeField] private GameObject _rightEngine;
+    [SerializeField] private GameObject _leftEngine;
     [SerializeField] private UIManager _UIManager;
 
     [SerializeField] private bool _tripleShot;
@@ -94,6 +96,11 @@ public class Player : MonoBehaviour
         _health--;
         
         _UIManager.UpdateLives(_health);
+
+        if(_health == 2)
+            _rightEngine.gameObject.SetActive(true);
+        else if(_health == 1)
+            _leftEngine.gameObject.SetActive(true);
 
         if (_health <= 0)
         {
