@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class Enemy : MonoBehaviour
 {
@@ -8,12 +9,18 @@ public class Enemy : MonoBehaviour
     [SerializeField] int _scoreReward = 10;
     [SerializeField] Animator _anim;
     [SerializeField] Collider2D _collider;
+    [SerializeField] Laser _laserPrefab;
+    
 
+    private AudioSource _explosionAudioSource;
+    AudioSource _laserAudioSource;
     private bool _isDead;
     UIManager _manager;
     private void Awake()
     {
         _manager = FindObjectOfType<UIManager>();
+        StartCoroutine(CO_Shoot());
+
     }
     void Update()
     {
@@ -29,6 +36,8 @@ public class Enemy : MonoBehaviour
     }
     private void OnTriggerEnter2D(Collider2D other)
     {
+        if (other.CompareTag($"Enemy Laser")) return;
+
         if (other.TryGetComponent(out Player player))
         {
             player.Damage();
@@ -37,6 +46,7 @@ public class Enemy : MonoBehaviour
 
         else if (other.TryGetComponent(out Laser laser))
         {
+            
             _manager.UpdateScore(_scoreReward);
             Destroy(laser.gameObject);
             Destroy();            
@@ -45,12 +55,39 @@ public class Enemy : MonoBehaviour
 
     public void Destroy()
     {
+        StopAllCoroutines();
         _isDead = true;
         _collider.enabled = false;
+        _explosionAudioSource.Play();
         _anim.SetTrigger("OnEnemyDeath");
     }
     public void DestroyObject()
     {
         Destroy(this.gameObject);
+    }
+    public void SetExplosionAudio(AudioSource audioSource)
+    {
+        _explosionAudioSource = audioSource;
+    }
+    public void SetLaserAudio(AudioSource audioSource)
+    {
+        _laserAudioSource = audioSource;
+    }
+
+    private IEnumerator CO_Shoot()
+    {
+        float timer = 5;
+
+        while (true)
+        {
+            yield return new WaitForSeconds(timer);
+
+            Laser laser = Instantiate(_laserPrefab, transform.position, Quaternion.identity);
+
+            _laserAudioSource.Play();
+            laser.tag = "Enemy Laser";
+            laser.ReverseSpeed();
+            timer = Random.Range(2, 5);
+        }        
     }
 }

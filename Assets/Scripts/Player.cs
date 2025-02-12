@@ -11,6 +11,8 @@ public class Player : MonoBehaviour
     [SerializeField] private GameObject _rightEngine;
     [SerializeField] private GameObject _leftEngine;
     [SerializeField] private UIManager _UIManager;
+    [SerializeField] private AudioSource _laserAudioSource;
+    [SerializeField] private AudioSource _powerUpAudioSource;
 
     [SerializeField] private bool _tripleShot;
     [SerializeField] private float _powerUpTimer = 5f;
@@ -45,6 +47,17 @@ public class Player : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Space) && Time.time > _canFire)
             Shoot();
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (!collision.CompareTag($"Enemy Laser")) return;
+
+        if(collision.TryGetComponent(out Laser laser))
+        {
+            Damage();
+            Destroy(laser.gameObject);
+        }
     }
     private void CalculateMovement()
     {
@@ -84,7 +97,8 @@ public class Player : MonoBehaviour
         else
         {
             Instantiate(_laserPrefab, laserPos, Quaternion.identity);
-        }        
+        }
+        _laserAudioSource.Play();
     }
     public void Damage()
     {
@@ -116,6 +130,7 @@ public class Player : MonoBehaviour
         if(_tripleShotRoutine != null)
             StopCoroutine(_tripleShotRoutine);
 
+        _powerUpAudioSource.Play();
         _tripleShotRoutine = StartCoroutine(CO_TripleShotPowerUp());
     }
     public IEnumerator CO_TripleShotPowerUp()
@@ -128,6 +143,8 @@ public class Player : MonoBehaviour
     {
         if (_speedRoutine != null)
             StopCoroutine(_speedRoutine);
+
+        _powerUpAudioSource.Play();
         _speedRoutine = StartCoroutine(CO_SpeedPowerUp());
     }
     public IEnumerator CO_SpeedPowerUp()
@@ -138,6 +155,7 @@ public class Player : MonoBehaviour
     }
     public void ShieldPowerUp()
     {
+        _powerUpAudioSource.Play();
         _shieldUp = true;
         _playerShield.gameObject.SetActive(true);
         

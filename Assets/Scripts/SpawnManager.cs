@@ -7,6 +7,8 @@ public class SpawnManager : MonoBehaviour
     [SerializeField] Transform _enemyContainer;
     [SerializeField] float _respawnYPos = 8;
     [SerializeField] private GameObject[] _powerups;
+    [SerializeField] AudioSource _explosionAudioSource;
+    [SerializeField] AudioSource _laserAudioSource;
 
     private bool _stopSpawning = false;
 
@@ -27,7 +29,10 @@ public class SpawnManager : MonoBehaviour
 
             spawnX = Random.Range(-9, 9f);
 
-            Instantiate(_enemyPrefab, new Vector3(spawnX, _respawnYPos, 0), Quaternion.identity, _enemyContainer);
+            var enemyObj =Instantiate(_enemyPrefab, new Vector3(spawnX, _respawnYPos, 0), Quaternion.identity, _enemyContainer);
+
+            enemyObj.GetComponent<Enemy>().SetExplosionAudio(_explosionAudioSource);
+            enemyObj.GetComponent<Enemy>().SetLaserAudio(_laserAudioSource);
             spawnInterval = Random.Range(2, 5);
         }
     }

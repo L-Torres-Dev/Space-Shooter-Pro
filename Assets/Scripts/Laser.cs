@@ -9,12 +9,17 @@ public class Laser : MonoBehaviour
     {
         transform.Translate(Vector3.up *_laserSpeed * Time.deltaTime);
 
-        if(transform.position.y > _laserDeathPosition)
+        if(transform.position.y > _laserDeathPosition || transform.position.y < -_laserDeathPosition)
         {
             if(transform.parent != null)
                 Destroy(transform.parent.gameObject);
             Destroy(gameObject);
         }
             
+    }
+
+    public void ReverseSpeed()
+    {
+        _laserSpeed *= -1;
     }
 }
