@@ -23,6 +23,11 @@ public class UIManager : MonoBehaviour
         {
             SceneManager.LoadScene("Game", LoadSceneMode.Single);
         }
+
+        if (Input.GetKeyDown(KeyCode.Escape)) 
+        {
+            Application.Quit();
+        }
     }
     public void UpdateScore(int score)
     {

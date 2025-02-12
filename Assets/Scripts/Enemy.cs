@@ -76,18 +76,18 @@ public class Enemy : MonoBehaviour
 
     private IEnumerator CO_Shoot()
     {
-        float timer = 5;
+        float fireRate = 5;
 
         while (true)
         {
-            yield return new WaitForSeconds(timer);
+            yield return new WaitForSeconds(fireRate);
 
             Laser laser = Instantiate(_laserPrefab, transform.position, Quaternion.identity);
 
             _laserAudioSource.Play();
             laser.tag = "Enemy Laser";
             laser.ReverseSpeed();
-            timer = Random.Range(2, 5);
+            fireRate = Random.Range(2, 5);
         }        
     }
 }
