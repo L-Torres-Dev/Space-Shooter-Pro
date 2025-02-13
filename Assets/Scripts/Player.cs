@@ -5,6 +5,7 @@ public class Player : MonoBehaviour
 {
     [SerializeField] private int _health = 3;
     [SerializeField] private float _speed = 3.5f;
+    [SerializeField] private float _thrusterBoostSpeed = 5f;
     [SerializeField] private GameObject _laserPrefab;
     [SerializeField] private GameObject _tripleShotPrefab;
     [SerializeField] private GameObject _playerShield;
@@ -31,7 +32,8 @@ public class Player : MonoBehaviour
     private float _horizontalBound = 12.15f;
     private float _verticalBound = -4.89f;
 
-    Vector2 _direction, _clampedPos;
+    Vector2 _moveInput, _direction, _clampedPos;
+    private bool _thrusterBoostOn, _speedPowerUpOn;
 
     Coroutine _tripleShotRoutine, _speedRoutine, _shieldRoutine;
 
@@ -43,6 +45,7 @@ public class Player : MonoBehaviour
 
     void Update()
     {
+        _thrusterBoostOn = Input.GetKey(KeyCode.LeftShift);
         CalculateMovement();
 
         if (Input.GetKeyDown(KeyCode.Space) && Time.time > _canFire)
@@ -61,15 +64,14 @@ public class Player : MonoBehaviour
     }
     private void CalculateMovement()
     {
-        _horizontalInput = Input.GetAxis("Horizontal");
-        _verticalInput = Input.GetAxis("Vertical");
+        MoveInput();
+        _direction = _moveInput.normalized;
+        float speed = _thrusterBoostOn ? _thrusterBoostSpeed : _speed;
+        speed = _speedPowerUpOn ? speed * _speedBoostMultiplier : speed;
 
-        _direction = new Vector2(_horizontalInput, _verticalInput).normalized;
-
-        transform.Translate(_direction * Time.deltaTime * _speed);
+        transform.Translate(_direction * Time.deltaTime * speed);
 
         _clampedPos = new Vector2(transform.position.x, transform.position.y);
-
         _clampedPos.y = Mathf.Clamp(_clampedPos.y, _verticalBound, 0);
 
         if (_clampedPos.x > _horizontalBound)
@@ -82,6 +84,20 @@ public class Player : MonoBehaviour
         }
 
         transform.position = _clampedPos;
+    }
+
+    private void MoveInput()
+    {
+        _moveInput = Vector2.zero;
+
+        if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow))
+            _moveInput.x = 1;
+        else if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
+            _moveInput.x = -1;
+        if(Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow))
+            _moveInput.y = 1;
+        else if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow))
+            _moveInput.y = -1;
     }
 
     private void Shoot()
@@ -149,9 +165,9 @@ public class Player : MonoBehaviour
     }
     public IEnumerator CO_SpeedPowerUp()
     {
-        _speed = _baseSpeed * _speedBoostMultiplier;
+        _speedPowerUpOn = true;
         yield return new WaitForSeconds(_powerUpTimer);
-        _speed = _baseSpeed;
+        _speedPowerUpOn = false;
     }
     public void ShieldPowerUp()
     {

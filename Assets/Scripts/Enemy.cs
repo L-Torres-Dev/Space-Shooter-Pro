@@ -36,7 +36,7 @@ public class Enemy : MonoBehaviour
     }
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag($"Enemy Laser")) return;
+        if (other.CompareTag("Enemy Laser")) return;
 
         if (other.TryGetComponent(out Player player))
         {
@@ -46,7 +46,6 @@ public class Enemy : MonoBehaviour
 
         else if (other.TryGetComponent(out Laser laser))
         {
-            
             _manager.UpdateScore(_scoreReward);
             Destroy(laser.gameObject);
             Destroy();            
