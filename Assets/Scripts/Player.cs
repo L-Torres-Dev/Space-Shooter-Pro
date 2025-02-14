@@ -1,4 +1,5 @@
-﻿using System.Collections;   
+﻿using System;
+using System.Collections;   
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -6,7 +7,6 @@ public class Player : MonoBehaviour
     [SerializeField] private int _health = 3;
     [SerializeField] private GameObject _laserPrefab;
     [SerializeField] private GameObject _tripleShotPrefab;
-    [SerializeField] private GameObject _playerShield;
     [SerializeField] private GameObject _rightEngine;
     [SerializeField] private GameObject _leftEngine;
     [SerializeField] private UIManager _UIManager;
@@ -20,17 +20,22 @@ public class Player : MonoBehaviour
     [SerializeField] private int _score;
 
     private Thrusters _thrusters;
+    private Shield _shield;
 
-    private bool _shieldUp;
     private float _canFire = -1;
+    private int _ammo = 15;
 
-    Coroutine _tripleShotRoutine, _shieldRoutine;
+    Coroutine _tripleShotRoutine;
 
     private void Awake()
     {
         _thrusters = GetComponent<Thrusters>();
+        _shield = GetComponent<Shield>();
         if (_thrusters == null)
             Debug.LogError("ERROR: Thrusters component not found!");
+
+        if (_shield == null)
+            Debug.LogError("ERROR: Shield component not found!");
     }
     void Start()
     {
@@ -61,20 +66,22 @@ public class Player : MonoBehaviour
         laserPos.y += _laserOffset;
         if (_tripleShot)
         {
-
             Instantiate(_tripleShotPrefab, laserPos, Quaternion.identity);
         }
         else
         {
+            if (_ammo < 1) return;
+            _ammo--;
+            _UIManager.SetAmmoText(_ammo);
             Instantiate(_laserPrefab, laserPos, Quaternion.identity);
         }
         _laserAudioSource.Play();
     }
     public void Damage()
     {
-        if (_shieldUp)
+        if (_shield.ShieldStrength > 0)
         {
-            DeactivateShield();
+            _shield.Damage();
             return;
         }
         _health--;
@@ -118,18 +125,17 @@ public class Player : MonoBehaviour
     public void ShieldPowerUp()
     {
         _powerUpAudioSource.Play();
-        _shieldUp = true;
-        _playerShield.gameObject.SetActive(true);
-        
-    }
-    public void DeactivateShield()
-    {
-        _shieldUp = false;
-        _playerShield.gameObject.SetActive(false);
+        _shield.AddShields();
     }
     public void AddScore(int score)
     {
         _score += score;
+    }
+
+    public void AmmoPickup()
+    {
+        _ammo += 15;
+        _UIManager.SetAmmoText(_ammo);
     }
 
     public int Score => _score;

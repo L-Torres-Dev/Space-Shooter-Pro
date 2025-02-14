@@ -9,6 +9,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] TMP_Text _scoreText;
     [SerializeField] TMP_Text _gameOverText;
     [SerializeField] TMP_Text _restartText;
+    [SerializeField] TMP_Text _ammoText;
     [SerializeField] Image _livesImage;
     [SerializeField] Sprite[] _liveSprites;
     [SerializeField] Player _player;
@@ -38,6 +39,11 @@ public class UIManager : MonoBehaviour
     public void UpdateLives(int currentLives)
     {
         _livesImage.sprite = _liveSprites[currentLives];
+    }
+
+    public void SetAmmoText(int ammo)
+    {
+        _ammoText.SetText($"{ammo}x");
     }
     public void GameOver()
     {
