@@ -4,8 +4,6 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     [SerializeField] private int _health = 3;
-    [SerializeField] private float _speed = 3.5f;
-    [SerializeField] private float _thrusterBoostSpeed = 5f;
     [SerializeField] private GameObject _laserPrefab;
     [SerializeField] private GameObject _tripleShotPrefab;
     [SerializeField] private GameObject _playerShield;
@@ -19,35 +17,28 @@ public class Player : MonoBehaviour
     [SerializeField] private float _powerUpTimer = 5f;
     [SerializeField] private float _fireRate = .5f;
     [SerializeField] private float _laserOffset = .8f;
-    [SerializeField] private float _speedBoostMultiplier = 2;
     [SerializeField] private int _score;
 
+    private Thrusters _thrusters;
+
     private bool _shieldUp;
-    private float _baseSpeed;
     private float _canFire = -1;
 
-    private float _horizontalInput;
-    private float _verticalInput;
+    Coroutine _tripleShotRoutine, _shieldRoutine;
 
-    private float _horizontalBound = 12.15f;
-    private float _verticalBound = -4.89f;
-
-    Vector2 _moveInput, _direction, _clampedPos;
-    private bool _thrusterBoostOn, _speedPowerUpOn;
-
-    Coroutine _tripleShotRoutine, _speedRoutine, _shieldRoutine;
-
+    private void Awake()
+    {
+        _thrusters = GetComponent<Thrusters>();
+        if (_thrusters == null)
+            Debug.LogError("ERROR: Thrusters component not found!");
+    }
     void Start()
     {
         transform.position = new Vector3(0, 0, 0);
-        _baseSpeed = _speed;
     }
 
     void Update()
     {
-        _thrusterBoostOn = Input.GetKey(KeyCode.LeftShift);
-        CalculateMovement();
-
         if (Input.GetKeyDown(KeyCode.Space) && Time.time > _canFire)
             Shoot();
     }
@@ -62,44 +53,7 @@ public class Player : MonoBehaviour
             Destroy(laser.gameObject);
         }
     }
-    private void CalculateMovement()
-    {
-        MoveInput();
-        _direction = _moveInput.normalized;
-        float speed = _thrusterBoostOn ? _thrusterBoostSpeed : _speed;
-        speed = _speedPowerUpOn ? speed * _speedBoostMultiplier : speed;
-
-        transform.Translate(_direction * Time.deltaTime * speed);
-
-        _clampedPos = new Vector2(transform.position.x, transform.position.y);
-        _clampedPos.y = Mathf.Clamp(_clampedPos.y, _verticalBound, 0);
-
-        if (_clampedPos.x > _horizontalBound)
-        {
-            _clampedPos.x = -_horizontalBound;
-        }
-        else if (_clampedPos.x < -_horizontalBound)
-        {
-            _clampedPos.x = _horizontalBound;
-        }
-
-        transform.position = _clampedPos;
-    }
-
-    private void MoveInput()
-    {
-        _moveInput = Vector2.zero;
-
-        if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow))
-            _moveInput.x = 1;
-        else if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
-            _moveInput.x = -1;
-        if(Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow))
-            _moveInput.y = 1;
-        else if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow))
-            _moveInput.y = -1;
-    }
-
+    
     private void Shoot()
     {
         _canFire = Time.time + _fireRate;
@@ -157,18 +111,10 @@ public class Player : MonoBehaviour
     }
     public void SpeedPowerUP()
     {
-        if (_speedRoutine != null)
-            StopCoroutine(_speedRoutine);
-
+        _thrusters.SpeedPowerUP();
         _powerUpAudioSource.Play();
-        _speedRoutine = StartCoroutine(CO_SpeedPowerUp());
     }
-    public IEnumerator CO_SpeedPowerUp()
-    {
-        _speedPowerUpOn = true;
-        yield return new WaitForSeconds(_powerUpTimer);
-        _speedPowerUpOn = false;
-    }
+   
     public void ShieldPowerUp()
     {
         _powerUpAudioSource.Play();
