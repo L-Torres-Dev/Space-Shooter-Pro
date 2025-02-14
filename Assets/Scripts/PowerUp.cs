@@ -36,6 +36,9 @@ public class PowerUp : MonoBehaviour
                 case 3:
                     player.AmmoPickup();
                     break;
+                case 4:
+                    player.Heal();
+                    break;
                 default:
                     print($"Power Up doesn't exist");
                     break;

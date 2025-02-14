@@ -85,13 +85,17 @@ public class Player : MonoBehaviour
             return;
         }
         _health--;
-        
         _UIManager.UpdateLives(_health);
 
         if(_health == 2)
             _rightEngine.gameObject.SetActive(true);
         else if(_health == 1)
             _leftEngine.gameObject.SetActive(true);
+        else
+        {
+            _rightEngine.gameObject.SetActive(false);
+            _leftEngine.gameObject.SetActive(false);
+        }
 
         if (_health <= 0)
         {
@@ -138,5 +142,21 @@ public class Player : MonoBehaviour
         _UIManager.SetAmmoText(_ammo);
     }
 
+    public void Heal()
+    {
+        _health++;
+        if(_health > 3) _health = 3;
+
+        _UIManager.UpdateLives(_health);
+        if (_health == 2)
+            _rightEngine.gameObject.SetActive(true);
+        else if (_health == 1)
+            _leftEngine.gameObject.SetActive(true);
+        else
+        {
+            _rightEngine.gameObject.SetActive(false);
+            _leftEngine.gameObject.SetActive(false);
+        }
+    }
     public int Score => _score;
 }
