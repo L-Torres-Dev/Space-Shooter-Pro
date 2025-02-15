@@ -39,6 +39,9 @@ public class PowerUp : MonoBehaviour
                 case 4:
                     player.Heal();
                     break;
+                case 5:
+                    player.MultiShotPowerUp();
+                    break;
                 default:
                     print($"Power Up doesn't exist");
                     break;

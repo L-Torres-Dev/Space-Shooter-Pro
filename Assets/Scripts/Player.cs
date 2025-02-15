@@ -7,6 +7,7 @@ public class Player : MonoBehaviour
     [SerializeField] private int _health = 3;
     [SerializeField] private GameObject _laserPrefab;
     [SerializeField] private GameObject _tripleShotPrefab;
+    [SerializeField] private GameObject _multiShotPrefab;
     [SerializeField] private GameObject _rightEngine;
     [SerializeField] private GameObject _leftEngine;
     [SerializeField] private UIManager _UIManager;
@@ -14,6 +15,7 @@ public class Player : MonoBehaviour
     [SerializeField] private AudioSource _powerUpAudioSource;
 
     [SerializeField] private bool _tripleShot;
+    [SerializeField] private bool _multiShot;
     [SerializeField] private float _powerUpTimer = 5f;
     [SerializeField] private float _fireRate = .5f;
     [SerializeField] private float _laserOffset = .8f;
@@ -25,7 +27,7 @@ public class Player : MonoBehaviour
     private float _canFire = -1;
     private int _ammo = 15;
 
-    Coroutine _tripleShotRoutine;
+    Coroutine _tripleShotRoutine, _multiShotRoutine;
 
     private void Awake()
     {
@@ -67,6 +69,18 @@ public class Player : MonoBehaviour
         if (_tripleShot)
         {
             Instantiate(_tripleShotPrefab, laserPos, Quaternion.identity);
+            
+        }
+        else if (_multiShot)
+        {
+            var multiShot = Instantiate(_multiShotPrefab, laserPos, Quaternion.identity);
+
+            for (int i = 0; i < multiShot.transform.childCount; i++)
+            {
+                Laser laser = multiShot.transform.GetChild(i).GetComponent<Laser>();
+
+                laser.Rotate();
+            }
         }
         else
         {
@@ -116,9 +130,26 @@ public class Player : MonoBehaviour
     }
     public IEnumerator CO_TripleShotPowerUp()
     {
+        _multiShot = false;
         _tripleShot = true;
         yield return new WaitForSeconds(_powerUpTimer);
         _tripleShot = false;
+    }
+
+    public void MultiShotPowerUp()
+    {
+        if (_multiShotRoutine != null)
+            StopCoroutine(_multiShotRoutine);
+
+        _powerUpAudioSource.Play();
+        _multiShotRoutine = StartCoroutine(CO_MultiShotPowerUp());
+    }
+    public IEnumerator CO_MultiShotPowerUp()
+    {
+        _tripleShot = false;
+        _multiShot = true;
+        yield return new WaitForSeconds(_powerUpTimer);
+        _multiShot = false;
     }
     public void SpeedPowerUP()
     {
@@ -148,10 +179,18 @@ public class Player : MonoBehaviour
         if(_health > 3) _health = 3;
 
         _UIManager.UpdateLives(_health);
+
         if (_health == 2)
+        {
             _rightEngine.gameObject.SetActive(true);
+            _leftEngine.gameObject.SetActive(false);
+        }
+            
         else if (_health == 1)
+        {
             _leftEngine.gameObject.SetActive(true);
+        }
+            
         else
         {
             _rightEngine.gameObject.SetActive(false);
