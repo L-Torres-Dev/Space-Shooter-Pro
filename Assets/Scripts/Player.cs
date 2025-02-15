@@ -13,6 +13,7 @@ public class Player : MonoBehaviour
     [SerializeField] private UIManager _UIManager;
     [SerializeField] private AudioSource _laserAudioSource;
     [SerializeField] private AudioSource _powerUpAudioSource;
+    [SerializeField] private Shake _cameraShake;
 
     [SerializeField] private bool _tripleShot;
     [SerializeField] private bool _multiShot;
@@ -102,10 +103,14 @@ public class Player : MonoBehaviour
         _health--;
         _UIManager.UpdateLives(_health);
 
-        if(_health == 2)
-            _rightEngine.gameObject.SetActive(true);
+        _cameraShake.StartCoroutine(_cameraShake.Co_Shake(ShakeType.Large, .35f, 0, .3f));
+
+        if (_health == 2)
+           _rightEngine.gameObject.SetActive(true);
+
         else if(_health == 1)
             _leftEngine.gameObject.SetActive(true);
+
         else
         {
             _rightEngine.gameObject.SetActive(false);
@@ -114,6 +119,7 @@ public class Player : MonoBehaviour
 
         if (_health <= 0)
         {
+            
             SpawnManager spawnManager = GameObject.FindObjectOfType<SpawnManager>();
             if (spawnManager != null)
                 spawnManager.OnPlayerDeath();

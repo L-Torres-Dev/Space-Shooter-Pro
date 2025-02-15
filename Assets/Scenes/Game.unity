@@ -271,6 +271,7 @@ GameObject:
   - component: {fileID: 254701982}
   - component: {fileID: 254701981}
   - component: {fileID: 254701984}
+  - component: {fileID: 254701985}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -403,6 +404,18 @@ MonoBehaviour:
   m_BeforeTransparentBundles: []
   m_BeforeStackBundles: []
   m_AfterStackBundles: []
+--- !u!114 &254701985
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 254701980}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eecd1c1d912df1c4d97ba0e7bbc752a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &290554088
 GameObject:
   m_ObjectHideFlags: 0
@@ -2953,11 +2966,13 @@ MonoBehaviour:
   _UIManager: {fileID: 1259476813}
   _laserAudioSource: {fileID: 972551264}
   _powerUpAudioSource: {fileID: 2058433563}
+  _cameraShake: {fileID: 254701985}
   _tripleShot: 0
   _multiShot: 0
   _powerUpTimer: 5
   _fireRate: 0.15
   _laserOffset: 0.8
+  _maxAmmo: 30
   _score: 0
 --- !u!212 &2126316646
 SpriteRenderer:
