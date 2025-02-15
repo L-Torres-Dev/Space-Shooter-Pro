@@ -7,6 +7,7 @@ public class SpawnManager : MonoBehaviour
     [SerializeField] Transform _enemyContainer;
     [SerializeField] float _respawnYPos = 8;
     [SerializeField] private GameObject[] _powerups;
+    [SerializeField] private GameObject[] _rarePowerups;
     [SerializeField] AudioSource _explosionAudioSource;
     [SerializeField] AudioSource _laserAudioSource;
 
@@ -16,6 +17,7 @@ public class SpawnManager : MonoBehaviour
     {
         StartCoroutine(CO_SpawnEnemyRoutine());
         StartCoroutine(CO_SpawnPowerUp());
+        StartCoroutine(CO_RareSpawnPowerUp());
     }
 
     IEnumerator CO_SpawnEnemyRoutine()
@@ -39,7 +41,7 @@ public class SpawnManager : MonoBehaviour
 
     IEnumerator CO_SpawnPowerUp()
     {
-        yield return new WaitForSeconds(1.5f);
+        yield return new WaitForSeconds(5f);
         float spawnX;
         float randomInterval = 0;
         int powerUpIndex;
@@ -53,10 +55,32 @@ public class SpawnManager : MonoBehaviour
             spawnPoint.y = _respawnYPos;
 
             yield return new WaitForSeconds(randomInterval);
-            randomInterval = Random.Range(3, 7f);
+            randomInterval = Random.Range(8, 20f);
             Instantiate(_powerups[powerUpIndex], spawnPoint, Quaternion.identity);
         }    
     }
+
+    IEnumerator CO_RareSpawnPowerUp()
+    {
+        yield return new WaitForSeconds(15f);
+        float spawnX;
+        float randomInterval = 0;
+        int powerUpIndex;
+        Vector3 spawnPoint = Vector3.zero;
+        while (_stopSpawning == false)
+        {
+            powerUpIndex = Random.Range(0, _rarePowerups.Length);
+
+            spawnX = Random.Range(-9, 9f);
+            spawnPoint.x = spawnX;
+            spawnPoint.y = _respawnYPos;
+
+            yield return new WaitForSeconds(randomInterval);
+            randomInterval = Random.Range(15, 30f);
+            Instantiate(_rarePowerups[powerUpIndex], spawnPoint, Quaternion.identity);
+        }
+    }
+
     public void OnPlayerDeath()
     {
         _stopSpawning = true;

@@ -19,6 +19,7 @@ public class Player : MonoBehaviour
     [SerializeField] private float _powerUpTimer = 5f;
     [SerializeField] private float _fireRate = .5f;
     [SerializeField] private float _laserOffset = .8f;
+    [SerializeField] private int _maxAmmo = 30;
     [SerializeField] private int _score;
 
     private Thrusters _thrusters;
@@ -170,6 +171,7 @@ public class Player : MonoBehaviour
     public void AmmoPickup()
     {
         _ammo += 15;
+        if(_ammo > _maxAmmo) _ammo = _maxAmmo;
         _UIManager.SetAmmoText(_ammo);
     }
 

@@ -2599,10 +2599,11 @@ MonoBehaviour:
   _powerups:
   - {fileID: 2547696569927023400, guid: ab331abdc103da54980acfa29d4ca603, type: 3}
   - {fileID: 662812489797391356, guid: b36af02bfcfbce1428d79a39ee154352, type: 3}
-  - {fileID: 7547636243051021353, guid: 8f9eb7ac5f55d134d8eae0d75627ef81, type: 3}
   - {fileID: 2170801993706517589, guid: 0c0144ac9cfdb2243b6b70bed950c433, type: 3}
-  - {fileID: 3159796769173721373, guid: a06e21ea2a9b73249a50e3e6f2f314ed, type: 3}
+  _rarePowerups:
   - {fileID: 7082895662017190835, guid: dd48647d49b4725418296b83242a6c4e, type: 3}
+  - {fileID: 3159796769173721373, guid: a06e21ea2a9b73249a50e3e6f2f314ed, type: 3}
+  - {fileID: 7547636243051021353, guid: 8f9eb7ac5f55d134d8eae0d75627ef81, type: 3}
   _explosionAudioSource: {fileID: 290554090}
   _laserAudioSource: {fileID: 972551264}
 --- !u!1 &2038016567
