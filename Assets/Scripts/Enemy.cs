@@ -84,9 +84,24 @@ public class Enemy : MonoBehaviour
         }
         else if (_movingCircular)
         {
-            float angle = Mathf.Lerp(270, 630, _circleProgress);
+            float angle = 0;
 
-            if(angle == 630)
+            float startAngle = 0;
+            float endAngle = 0;
+
+            if (_circularDirection.x > 0)
+            {
+                startAngle = 630;
+                endAngle = 270;
+            }
+            else
+            {
+                startAngle = 270;
+                endAngle = 630;
+            }
+
+            angle = Mathf.Lerp(startAngle, endAngle, _circleProgress);
+            if (angle == endAngle)
             {
                 _movingCircular = false;
                 _finishedCircle = true;
@@ -183,9 +198,6 @@ public class Enemy : MonoBehaviour
 
     private void CalculateCircularMovement()
     {
-
-        /*Vector3 _circularDirection;
-        float _startCircularPosition, _circleRadius;*/
 
         _startCircularPosition = Random.Range(0, 3.5f);
         _circleRadius = Random.Range(1, 2f);
