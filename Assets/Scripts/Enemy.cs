@@ -32,7 +32,7 @@ public class Enemy : MonoBehaviour
         int randomMovement = Random.Range(0, 3);
         _movementState = (MovementState)randomMovement;
 
-        CalculateDiagnolDirection();
+        CalculateDiagonalDirection();
         CalculateCircularMovement();
     }
     void Update()
@@ -44,8 +44,8 @@ public class Enemy : MonoBehaviour
             case MovementState.Straight:
                 MoveDown();
                 break;
-            case MovementState.Diagnol:
-                MoveDiagnol();
+            case MovementState.Diagonal:
+                MoveDiagonal();
                 break;
             case MovementState.Circular:
                 MoveCircular();
@@ -62,12 +62,12 @@ public class Enemy : MonoBehaviour
 
             int randomMovement = Random.Range(0, 3);
             _movementState = (MovementState)randomMovement;
-            CalculateDiagnolDirection();
+            CalculateDiagonalDirection();
             CalculateCircularMovement();
         }
     }
 
-    private void MoveDiagnol()
+    private void MoveDiagonal()
     {
         transform.position += _diagnoalDirection * (_speed * Time.deltaTime);
     }
@@ -180,7 +180,7 @@ public class Enemy : MonoBehaviour
         }        
     }
 
-    private void CalculateDiagnolDirection()
+    private void CalculateDiagonalDirection()
     {
         _diagnoalDirection = Vector2.zero;
 
@@ -211,5 +211,5 @@ public class Enemy : MonoBehaviour
 
 public enum MovementState
 {
-    Straight, Diagnol, Circular
+    Straight, Diagonal, Circular
 }
