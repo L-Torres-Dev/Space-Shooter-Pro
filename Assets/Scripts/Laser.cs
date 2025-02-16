@@ -14,6 +14,7 @@ public class Laser : MonoBehaviour
 
         if(transform.position.y > _laserDeathPosition || transform.position.y < -_laserDeathPosition)
         {
+            print($"Destroying Self: Laser -> {transform.position}");
             if(transform.parent != null)
                 Destroy(transform.parent.gameObject);
             Destroy(gameObject);

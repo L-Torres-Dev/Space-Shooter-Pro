@@ -1,12 +1,13 @@
 ﻿using System.Collections;
 using UnityEngine;
-using UnityEngine.UIElements;
+using static Utility.VectorExtensions;
 
 public class Enemy : MonoBehaviour
 {
     [SerializeField] float _speed = 3.5f;
     [SerializeField] float _respawnYPos = 8;
     [SerializeField] int _scoreReward = 10;
+    [SerializeField] float diagAngleMovement = 45;
     [SerializeField] Animator _anim;
     [SerializeField] Collider2D _collider;
     [SerializeField] Laser _laserPrefab;
@@ -16,22 +17,93 @@ public class Enemy : MonoBehaviour
     AudioSource _laserAudioSource;
     private bool _isDead;
     UIManager _manager;
+
+    MovementState _movementState;
+    Vector3 _diagnoalDirection;
+    Vector3 _circularDirection, _circularCenter;
+
+    bool _movingCircular, _finishedCircle;
+    float _startCircularPosition, _circleRadius, _circleProgress;
     private void Awake()
     {
         _manager = FindObjectOfType<UIManager>();
         StartCoroutine(CO_Shoot());
 
+        int randomMovement = Random.Range(0, 3);
+        _movementState = (MovementState)randomMovement;
+
+        CalculateDiagnolDirection();
+        CalculateCircularMovement();
     }
     void Update()
     {
-        transform.Translate(Vector3.down * (_speed * Time.deltaTime));
-
         if (_isDead) return;
+
+        switch (_movementState)
+        {
+            case MovementState.Straight:
+                MoveDown();
+                break;
+            case MovementState.Diagnol:
+                MoveDiagnol();
+                break;
+            case MovementState.Circular:
+                MoveCircular();
+                break;
+            default:
+                MoveDown();
+                break;
+        }
+
         if (transform.position.y < -6f)
         {
             float x = Random.Range(-9, 9f);
-
             transform.position = new Vector3(x, _respawnYPos, 0);
+
+            int randomMovement = Random.Range(0, 3);
+            _movementState = (MovementState)randomMovement;
+            CalculateDiagnolDirection();
+            CalculateCircularMovement();
+        }
+    }
+
+    private void MoveDiagnol()
+    {
+        transform.position += _diagnoalDirection * (_speed * Time.deltaTime);
+    }
+
+    private void MoveDown()
+    {
+        transform.Translate(Vector3.down * (_speed * Time.deltaTime));      
+    }
+    private void MoveCircular()
+    {
+        if(transform.position.y <= _startCircularPosition && !_movingCircular && !_finishedCircle)
+        {
+            _movingCircular = true;
+        }
+        else if (_movingCircular)
+        {
+            float angle = Mathf.Lerp(270, 630, _circleProgress);
+
+            if(angle == 630)
+            {
+                _movingCircular = false;
+                _finishedCircle = true;
+            }    
+
+            Vector3 cirlePos = GetVector2FromAngle(angle) * _circleRadius;
+            cirlePos += _circularCenter;
+
+            transform.position = cirlePos;
+
+            _circleProgress += Time.deltaTime * .5f;
+
+            if(_circleProgress > 1) _circleProgress = 1;
+        }
+        else
+        {
+            MoveDown();
         }
     }
     private void OnTriggerEnter2D(Collider2D other)
@@ -46,6 +118,7 @@ public class Enemy : MonoBehaviour
 
         else if (other.TryGetComponent(out Laser laser))
         {
+            print("Destroying Laser");
             _manager.UpdateScore(_scoreReward);
             Destroy(laser.gameObject);
             Destroy();            
@@ -81,6 +154,8 @@ public class Enemy : MonoBehaviour
         {
             yield return new WaitForSeconds(fireRate);
 
+            while (transform.position.y < -6f)
+                yield return null;
             Laser laser = Instantiate(_laserPrefab, transform.position, Quaternion.identity);
 
             _laserAudioSource.Play();
@@ -89,4 +164,40 @@ public class Enemy : MonoBehaviour
             fireRate = Random.Range(2, 5);
         }        
     }
+
+    private void CalculateDiagnolDirection()
+    {
+        _diagnoalDirection = Vector2.zero;
+
+        float degAngle = Mathf.Deg2Rad * diagAngleMovement;
+        float x = Mathf.Cos(degAngle);
+        float y = Mathf.Sin(degAngle);
+
+        _diagnoalDirection.x = x;
+        _diagnoalDirection.y = y;
+        _diagnoalDirection.y *= -1;
+
+        if (transform.position.x > 0)
+            _diagnoalDirection.x *= -1;
+    }
+
+    private void CalculateCircularMovement()
+    {
+
+        /*Vector3 _circularDirection;
+        float _startCircularPosition, _circleRadius;*/
+
+        _startCircularPosition = Random.Range(0, 3.5f);
+        _circleRadius = Random.Range(1, 2f);
+        _circularCenter.x = transform.position.x;
+        _circularCenter.y = _startCircularPosition + _circleRadius;
+        int randDirection = Random.Range(0, 2);
+        _circularDirection.x = randDirection == 0 ? 1 : -1;
+        _circleProgress = 0;
+    }
+}
+
+public enum MovementState
+{
+    Straight, Diagnol, Circular
 }

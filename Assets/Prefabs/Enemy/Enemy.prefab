@@ -50,6 +50,7 @@ MonoBehaviour:
   _speed: 3.5
   _respawnYPos: 8
   _scoreReward: 10
+  diagAngleMovement: 65
   _anim: {fileID: 8649660830239258815}
   _collider: {fileID: 8700513586807867748}
   _laserPrefab: {fileID: 7268819059916065322, guid: 930120676e6b0a049b9b693ef88e2f97,
