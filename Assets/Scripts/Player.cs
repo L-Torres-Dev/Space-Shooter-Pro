@@ -205,5 +205,10 @@ public class Player : MonoBehaviour
             _leftEngine.gameObject.SetActive(false);
         }
     }
+
+    public void FakeShot()
+    {
+        _thrusters.ForceOverheat();
+    }
     public int Score => _score;
 }

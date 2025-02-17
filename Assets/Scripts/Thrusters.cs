@@ -107,6 +107,10 @@ public class Thrusters : MonoBehaviour
         _heatLevels = 0;
         _speedRoutine = StartCoroutine(CO_SpeedPowerUp());
     }
+    public void ForceOverheat()
+    {
+        _heatLevels = 1;
+    }
     public IEnumerator CO_SpeedPowerUp()
     {
         _speedPowerUpOn = true;

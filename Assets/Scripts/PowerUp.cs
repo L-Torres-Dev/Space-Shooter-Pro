@@ -42,6 +42,9 @@ public class PowerUp : MonoBehaviour
                 case 5:
                     player.MultiShotPowerUp();
                     break;
+                case 6:
+                    player.FakeShot();
+                    break;
                 default:
                     print($"Power Up doesn't exist");
                     break;
