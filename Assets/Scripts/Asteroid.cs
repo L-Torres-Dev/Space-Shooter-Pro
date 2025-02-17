@@ -7,6 +7,7 @@ public class Asteroid : MonoBehaviour
     [SerializeField] float _rotationSpeed = 45;
     [SerializeField] GameObject _explosionPrefab;
     [SerializeField] SpawnManager _spawnManager;
+    [SerializeField] WaveSystem _waveSystem;
     [SerializeField] private AudioSource _explosionAudioSource;
 
     private void Update()
@@ -32,6 +33,9 @@ public class Asteroid : MonoBehaviour
     {
         if (_spawnManager != null)
             _spawnManager.StartSpawning();
+
+        if (_waveSystem != null)
+            _waveSystem.StartSpawning();
 
         _explosionAudioSource.Play();
         GameObject explosion = Instantiate(_explosionPrefab, transform.position, Quaternion.identity);

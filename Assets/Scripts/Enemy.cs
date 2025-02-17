@@ -24,6 +24,9 @@ public class Enemy : MonoBehaviour
 
     bool _movingCircular, _finishedCircle;
     float _startCircularPosition, _circleRadius, _circleProgress;
+
+    public System.Action<Enemy> onDeath;
+
     private void Awake()
     {
         _manager = FindObjectOfType<UIManager>();
@@ -143,6 +146,7 @@ public class Enemy : MonoBehaviour
     public void Destroy()
     {
         StopAllCoroutines();
+        onDeath?.Invoke(this);
         _isDead = true;
         _collider.enabled = false;
         _explosionAudioSource.Play();

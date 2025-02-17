@@ -10,6 +10,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] TMP_Text _gameOverText;
     [SerializeField] TMP_Text _restartText;
     [SerializeField] TMP_Text _ammoText;
+    [SerializeField] TMP_Text _waveText;
     [SerializeField] Image _livesImage;
     [SerializeField] Sprite[] _liveSprites;
     [SerializeField] Player _player;
@@ -34,6 +35,11 @@ public class UIManager : MonoBehaviour
     {
         _player.AddScore(score);
         _scoreText.SetText($"Score {_player.Score.ToString("D5")}");
+    }
+
+    public void UpdateWave(int wave)
+    {
+        _waveText.SetText($"Wave: {wave}");
     }
 
     public void UpdateLives(int currentLives)

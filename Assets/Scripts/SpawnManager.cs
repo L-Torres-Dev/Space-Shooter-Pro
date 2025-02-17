@@ -15,7 +15,7 @@ public class SpawnManager : MonoBehaviour
 
     public void StartSpawning()
     {
-        StartCoroutine(CO_SpawnEnemyRoutine());
+        //StartCoroutine(CO_SpawnEnemyRoutine());
         StartCoroutine(CO_SpawnPowerUp());
         StartCoroutine(CO_RareSpawnPowerUp());
     }
@@ -31,10 +31,10 @@ public class SpawnManager : MonoBehaviour
 
             spawnX = Random.Range(-9, 9f);
 
-            var enemyObj =Instantiate(_enemyPrefab, new Vector3(spawnX, _respawnYPos, 0), Quaternion.identity, _enemyContainer);
+            var enemyObj = Instantiate(_enemyPrefab, new Vector3(spawnX, _respawnYPos, 0), Quaternion.identity, _enemyContainer);
 
-            enemyObj.GetComponent<Enemy>().SetExplosionAudio(_explosionAudioSource);
-            enemyObj.GetComponent<Enemy>().SetLaserAudio(_laserAudioSource);
+            /*enemyObj.GetComponent<Enemy>().SetExplosionAudio(_explosionAudioSource);
+            enemyObj.GetComponent<Enemy>().SetLaserAudio(_laserAudioSource);*/
             spawnInterval = Random.Range(2, 5);
         }
     }
