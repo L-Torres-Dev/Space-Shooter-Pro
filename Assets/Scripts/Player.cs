@@ -61,6 +61,11 @@ public class Player : MonoBehaviour
             Damage();
             Destroy(laser.gameObject);
         }
+        if (collision.TryGetComponent(out Missile missile))
+        {
+            Damage();
+            missile.Destroy();
+        }
     }
     
     private void Shoot()
