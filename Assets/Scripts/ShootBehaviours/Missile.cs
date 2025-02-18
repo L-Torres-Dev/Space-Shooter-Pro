@@ -12,20 +12,17 @@ public class Missile : MonoBehaviour
     Transform player;
     bool homingOnPlayer;
 
-    LayerMask mask;
     int playerMask = 0b_0000_0000_0000_0000_0000_0010_0000_0000;
     int enemyMask = 0b_0000_0000_0000_0000_0000_0100_0000_0000;
-    private void Awake()
+    private void Start()
     {
-        mask = LayerMask.NameToLayer("Player");
-        
         Collider2D hit = Physics2D.OverlapCircle(transform.position, 50, playerMask);
 
-        if(hit.TryGetComponent(out Player player))
+        Transform player = GameManager.Instance.PlayerTransform;
+        if (player != null)
         {
             this.player = player.transform;
             homingOnPlayer = true;
-            print($"Player to missile");
         }
     }
 

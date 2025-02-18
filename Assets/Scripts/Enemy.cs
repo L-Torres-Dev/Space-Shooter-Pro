@@ -12,12 +12,15 @@ public class Enemy : MonoBehaviour
     [SerializeField] Collider2D _collider;
     [SerializeField] Laser _laserPrefab;
     [SerializeField] Missile _missilePrefab;
-    
+    [SerializeField] GameObject _shield;
 
     private AudioSource _explosionAudioSource;
     AudioSource _laserAudioSource;
-    private bool _isDead;
+    private bool _isDead, _isShielded;
     UIManager _manager;
+
+    private float _baseSpeed;
+    private Vector3 _playerPosition;
 
     MovementState _movementState;
     Vector3 _diagnoalDirection;
@@ -29,11 +32,23 @@ public class Enemy : MonoBehaviour
     ShootState _shootState;
 
     public System.Action<Enemy> onDeath;
+    int _playerMask;
 
     private void Awake()
     {
+        _playerMask = LayerMask.GetMask("Player");
+
+        _baseSpeed = _speed;
         _manager = FindObjectOfType<UIManager>();
         StartCoroutine(CO_Shoot());
+
+        int randomShield = Random.Range(0, 2);
+        if(randomShield == 1)
+        {
+            _shield.gameObject.SetActive(true);
+            _isShielded = true;
+        }
+            
 
         int randomShootState = Random.Range(0, 2);
         _shootState = (ShootState)randomShootState;
@@ -47,6 +62,17 @@ public class Enemy : MonoBehaviour
     void Update()
     {
         if (_isDead) return;
+        if (GameManager.Instance.PlayerTransform == null) return;
+
+        _playerPosition = GameManager.Instance.PlayerTransform.position;
+
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, 3, _playerMask);
+
+        //This line of code is simply to draw the line of sight. This is not necessary
+        Debug.DrawRay(transform.position, Vector2.down * 3, Color.red );
+
+        if (hit)
+            _speed = _baseSpeed * 1.5f;
 
         switch (_movementState)
         {
@@ -73,6 +99,7 @@ public class Enemy : MonoBehaviour
             _movementState = (MovementState)randomMovement;
             CalculateDiagonalDirection();
             CalculateCircularMovement();
+            _speed = _baseSpeed;
         }
     }
 
@@ -134,14 +161,29 @@ public class Enemy : MonoBehaviour
     {
         if (other.CompareTag("Enemy Laser")) return;
 
+        
+
         if (other.TryGetComponent(out Player player))
         {
+            if (_isShielded)
+            {
+                _isShielded = false;
+                _shield.gameObject.SetActive(false);
+                return;
+            }
             player.Damage();
             Destroy();
         }
 
         else if (other.TryGetComponent(out Laser laser))
         {
+            if (_isShielded)
+            {
+                _isShielded = false;
+                _shield.gameObject.SetActive(false);
+                Destroy(laser.gameObject);
+                return;
+            }
             print("Destroying Laser");
             _manager.UpdateScore(_scoreReward);
             Destroy(laser.gameObject);

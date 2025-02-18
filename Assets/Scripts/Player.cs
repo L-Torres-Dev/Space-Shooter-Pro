@@ -128,7 +128,7 @@ public class Player : MonoBehaviour
             SpawnManager spawnManager = GameObject.FindObjectOfType<SpawnManager>();
             if (spawnManager != null)
                 spawnManager.OnPlayerDeath();
-            _UIManager.GameOver();
+            GameManager.Instance.GameOver();
             Destroy(this.gameObject);
         }
     }  

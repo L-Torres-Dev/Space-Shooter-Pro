@@ -16,21 +16,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] Player _player;
 
     [SerializeField] float _gameOverInterval = .5f;
-
-    private bool _gameOver = false;
-
-    private void Update()
-    {
-        if(_gameOver && Input.GetKeyDown(KeyCode.R))
-        {
-            SceneManager.LoadScene("Game", LoadSceneMode.Single);
-        }
-
-        if (Input.GetKeyDown(KeyCode.Escape)) 
-        {
-            Application.Quit();
-        }
-    }
+    
     public void UpdateScore(int score)
     {
         _player.AddScore(score);
@@ -53,7 +39,6 @@ public class UIManager : MonoBehaviour
     }
     public void GameOver()
     {
-        _gameOver = true;
         _restartText.gameObject.SetActive(true);
         StartCoroutine(CO_GameOver());
     }
