@@ -11,6 +11,7 @@ public class Enemy : MonoBehaviour
     [SerializeField] Animator _anim;
     [SerializeField] Collider2D _collider;
     [SerializeField] Laser _laserPrefab;
+    [SerializeField] Missile _missilePrefab;
     
 
     private AudioSource _explosionAudioSource;
@@ -25,12 +26,17 @@ public class Enemy : MonoBehaviour
     bool _movingCircular, _finishedCircle;
     float _startCircularPosition, _circleRadius, _circleProgress;
 
+    ShootState _shootState;
+
     public System.Action<Enemy> onDeath;
 
     private void Awake()
     {
         _manager = FindObjectOfType<UIManager>();
         StartCoroutine(CO_Shoot());
+
+        int randomShootState = Random.Range(0, 2);
+        _shootState = (ShootState)randomShootState;
 
         int randomMovement = Random.Range(0, 3);
         _movementState = (MovementState)randomMovement;
@@ -175,13 +181,38 @@ public class Enemy : MonoBehaviour
 
             while (transform.position.y < -6f)
                 yield return null;
-            Laser laser = Instantiate(_laserPrefab, transform.position, Quaternion.identity);
 
-            _laserAudioSource.Play();
-            laser.tag = "Enemy Laser";
-            laser.ReverseSpeed();
+            while (transform.position.y > 4.85f)
+                yield return null;
+
+            switch (_shootState)
+            {
+                case ShootState.Laser:
+                    ShootLaser();
+                    break;
+                case ShootState.Missile:
+                    ShootMissile();
+                    break;
+            }
+
             fireRate = Random.Range(2, 5);
         }        
+    }
+
+    private void ShootLaser()
+    {
+        Laser laser = Instantiate(_laserPrefab, transform.position, Quaternion.identity);
+
+        _laserAudioSource.Play();
+        laser.tag = "Enemy Laser";
+        laser.ReverseSpeed();
+        
+    }
+
+    private void ShootMissile()
+    {
+        Missile missile = Instantiate(_missilePrefab, transform.position,
+            Quaternion.Euler(0,0,180));
     }
 
     private void CalculateDiagonalDirection()
@@ -216,4 +247,9 @@ public class Enemy : MonoBehaviour
 public enum MovementState
 {
     Straight, Diagonal, Circular
+}
+
+public enum ShootState
+{
+    Laser, Missile
 }

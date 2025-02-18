@@ -55,6 +55,8 @@ MonoBehaviour:
   _collider: {fileID: 8700513586807867748}
   _laserPrefab: {fileID: 7268819059916065322, guid: 930120676e6b0a049b9b693ef88e2f97,
     type: 3}
+  _missilePrefab: {fileID: 2595923035090150236, guid: 8fc124666150d224e87f104ff6aa4b11,
+    type: 3}
 --- !u!212 &3921779052628038561
 SpriteRenderer:
   m_ObjectHideFlags: 0
