@@ -3203,7 +3203,7 @@ MonoBehaviour:
   _explosionAudioSource: {fileID: 290554090}
   _laserAudioSource: {fileID: 972551264}
   _uiManager: {fileID: 1259476813}
-  _finalWave: 1
+  _finalWave: 3
 --- !u!1 &2038016567
 GameObject:
   m_ObjectHideFlags: 0
