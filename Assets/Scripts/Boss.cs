@@ -194,6 +194,7 @@ public class Boss : MonoBehaviour
         _collider.enabled = false;
         _explosionAudioSource.Play();
         _anim.SetTrigger("OnEnemyDeath");
+        GameManager.Instance.YouWin();
     }
 
     public void DestroyObject()

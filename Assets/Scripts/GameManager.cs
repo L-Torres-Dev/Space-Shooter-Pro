@@ -43,4 +43,10 @@ public class GameManager : MonoBehaviour
         _gameOver = true;
         _uiManager.GameOver();
     }
+
+    public void YouWin()
+    {
+        _gameOver = true;
+        _uiManager.YouWin();
+    }
 }

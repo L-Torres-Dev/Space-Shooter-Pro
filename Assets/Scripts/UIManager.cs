@@ -8,6 +8,7 @@ public class UIManager : MonoBehaviour
 {
     [SerializeField] TMP_Text _scoreText;
     [SerializeField] TMP_Text _gameOverText;
+    [SerializeField] TMP_Text _youWinText;
     [SerializeField] TMP_Text _restartText;
     [SerializeField] TMP_Text _ammoText;
     [SerializeField] TMP_Text _missileAmmoText;
@@ -50,6 +51,12 @@ public class UIManager : MonoBehaviour
         StartCoroutine(CO_GameOver());
     }
 
+    public void YouWin()
+    {
+        _restartText.gameObject.SetActive(true);
+        StartCoroutine(CO_YouWin());
+    }
+
     public IEnumerator CO_GameOver()
     {
         _gameOverText.gameObject.SetActive(true);
@@ -61,6 +68,20 @@ public class UIManager : MonoBehaviour
             _gameOverText.gameObject.SetActive(false);
             yield return wait;
             _gameOverText.gameObject.SetActive(true);
+        }
+    }
+
+    public IEnumerator CO_YouWin()
+    {
+        _youWinText.gameObject.SetActive(true);
+
+        var wait = new WaitForSeconds(_gameOverInterval);
+        while (true)
+        {
+            yield return wait;
+            _youWinText.gameObject.SetActive(false);
+            yield return wait;
+            _youWinText.gameObject.SetActive(true);
         }
     }
 }
