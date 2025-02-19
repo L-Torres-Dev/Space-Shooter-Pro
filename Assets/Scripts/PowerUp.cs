@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using static Utility.VectorExtensions;
 
 public class PowerUp : MonoBehaviour
 {
@@ -7,15 +8,29 @@ public class PowerUp : MonoBehaviour
 
     [SerializeField] private int _powerID;
 
+    private bool _movingToPlayer;
+
     void Update()
     {
-        transform.Translate(Vector3.down * (_speed * Time.deltaTime));
-        if (transform.position.y < _verticalBound)
+        if (_movingToPlayer)
         {
-            print($"Destroying at MY pos: {transform.position.y}; bound: {_verticalBound}");
-            Destroy(this.gameObject);
+            Vector2 direction = GetDirection(GameManager.Instance.PlayerTransform.position, transform.position);
+
+            transform.Translate(direction * (_speed * 2 * Time.deltaTime));
         }
-            
+        else
+        {
+            transform.Translate(Vector3.down * (_speed * Time.deltaTime));
+            if (transform.position.y < _verticalBound)
+            {
+                print($"Destroying at MY pos: {transform.position.y}; bound: {_verticalBound}");
+                Destroy(this.gameObject);
+            }
+        }
+        
+
+        if (Input.GetKeyDown(KeyCode.C))
+            _movingToPlayer = true;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -52,7 +67,7 @@ public class PowerUp : MonoBehaviour
 
             Destroy(this.gameObject);
         }
-        else if (collision.TryGetComponent(out Laser laser))
+        else if (collision.TryGetComponent(out Laser laser) && collision.CompareTag("Enemy Laser"))
         {
             Destroy(laser.gameObject);
             Destroy(this.gameObject);
