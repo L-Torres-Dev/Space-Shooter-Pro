@@ -53,7 +53,6 @@ public class Missile : MonoBehaviour
         FindClosestEnemy();
         if (_target)
         {
-            Debug.DrawLine(transform.position, _target.position, Color.red);
             Vector2 direction = GetDirection(_target.position, transform.position);
             
             if(transform.position.y > -4f)

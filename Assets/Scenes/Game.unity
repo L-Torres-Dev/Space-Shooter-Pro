@@ -3059,13 +3059,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 598f357285f898449a718268591fa7e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _enemyPrefab: {fileID: 5035060673623521579, guid: 8109c26178e009844b02ec128e42c5c7,
+  _enemyPrefab: {fileID: 1914771734276760915, guid: 8109c26178e009844b02ec128e42c5c7,
+    type: 3}
+  _bossPrefab: {fileID: 2756616522310017133, guid: 1c2c7486e5e3f6a48abbf8ccecccc0b0,
     type: 3}
   _enemyContainer: {fileID: 1923668958}
   _respawnYPos: 8
   _explosionAudioSource: {fileID: 290554090}
   _laserAudioSource: {fileID: 972551264}
   _uiManager: {fileID: 1259476813}
+  _finalWave: 3
 --- !u!1 &2038016567
 GameObject:
   m_ObjectHideFlags: 0

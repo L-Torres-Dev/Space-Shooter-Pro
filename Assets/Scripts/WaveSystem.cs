@@ -4,11 +4,13 @@ using UnityEngine;
 public class WaveSystem : MonoBehaviour
 {
     [SerializeField] Enemy _enemyPrefab;
+    [SerializeField] Boss _bossPrefab;
     [SerializeField] Transform _enemyContainer;
     [SerializeField] float _respawnYPos = 8;
     [SerializeField] AudioSource _explosionAudioSource;
     [SerializeField] AudioSource _laserAudioSource;
     [SerializeField] UIManager _uiManager;
+    [SerializeField] int _finalWave;
     private int _currentWave;
     private int _enemiesInWave;
     private int _maxEnemySpawn;
@@ -16,6 +18,7 @@ public class WaveSystem : MonoBehaviour
     private int _enemySpawnCount;
 
     private bool _stopSpawning = false;
+    private bool _spawnBoss = false;
 
     public int Wave { get { return _currentWave; } }
 
@@ -29,7 +32,7 @@ public class WaveSystem : MonoBehaviour
 
     private void CalculateEnemiesInWave()
     {
-        _enemiesInWave = (_currentWave * 2) + 7;
+        _enemiesInWave = (_currentWave * 2) + 5;
         _maxEnemySpawn = _currentWave * 2 + 3;
 
         if (_maxEnemySpawn > 30)
@@ -61,6 +64,14 @@ public class WaveSystem : MonoBehaviour
             else
                 yield return null;
         }
+
+        if (_spawnBoss)
+        {
+            Boss boss = Instantiate(_bossPrefab, new Vector3(0, 8, 0), Quaternion.identity);
+            boss.SetLaserAudio(_laserAudioSource);
+            boss.SetExplosionAudio(_explosionAudioSource);
+        }
+        
     }
 
     private void EnemyDestroyed(Enemy enemy)
@@ -76,6 +87,15 @@ public class WaveSystem : MonoBehaviour
         yield return new WaitForSeconds(1.5f);
         _currentWave++;
         _uiManager.UpdateWave(_currentWave);
-        CalculateEnemiesInWave();
+        if (_currentWave < _finalWave)
+        {
+            CalculateEnemiesInWave();
+        }
+        else
+        {
+            _stopSpawning = true;
+            _spawnBoss = true;
+        }
+        
     }
 }
