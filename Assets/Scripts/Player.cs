@@ -6,6 +6,7 @@ public class Player : MonoBehaviour
 {
     [SerializeField] private int _health = 3;
     [SerializeField] private GameObject _laserPrefab;
+    [SerializeField] private Missile _missilePrefab;
     [SerializeField] private GameObject _tripleShotPrefab;
     [SerializeField] private GameObject _multiShotPrefab;
     [SerializeField] private GameObject _rightEngine;
@@ -19,6 +20,7 @@ public class Player : MonoBehaviour
     [SerializeField] private bool _multiShot;
     [SerializeField] private float _powerUpTimer = 5f;
     [SerializeField] private float _fireRate = .5f;
+    [SerializeField] private float _missileFireRate = 1f;
     [SerializeField] private float _laserOffset = .8f;
     [SerializeField] private int _maxAmmo = 30;
     [SerializeField] private int _score;
@@ -27,7 +29,10 @@ public class Player : MonoBehaviour
     private Shield _shield;
 
     private float _canFire = -1;
+    private float _canFireMissile = -1;
     private int _ammo = 15;
+    private int _missileAmmo = 3;
+    private int _maxMissileAmmo = 3;
 
     Coroutine _tripleShotRoutine, _multiShotRoutine;
 
@@ -40,6 +45,8 @@ public class Player : MonoBehaviour
 
         if (_shield == null)
             Debug.LogError("ERROR: Shield component not found!");
+
+        StartCoroutine(CO_ReloadMissiles());
     }
     void Start()
     {
@@ -50,6 +57,11 @@ public class Player : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space) && Time.time > _canFire)
             Shoot();
+
+        if (Input.GetKeyDown(KeyCode.E) && Time.time > _canFireMissile)
+        {
+            FireMissile();
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -97,6 +109,20 @@ public class Player : MonoBehaviour
             Instantiate(_laserPrefab, laserPos, Quaternion.identity);
         }
         _laserAudioSource.Play();
+    }
+
+    private void FireMissile()
+    {
+        if (_missileAmmo < 1) return;
+        _canFireMissile = Time.time + _fireRate;
+
+        Vector2 missilePos = transform.position;
+        missilePos.y += _laserOffset;
+        Missile missile = Instantiate(_missilePrefab, missilePos, Quaternion.identity);
+
+        missile.SetOnPlayer(false);
+        _missileAmmo--;
+        _UIManager.SetMissileAmmoText(_missileAmmo);
     }
     public void Damage()
     {
@@ -214,6 +240,26 @@ public class Player : MonoBehaviour
     public void FakeShot()
     {
         _thrusters.ForceOverheat();
+    }
+
+    private IEnumerator CO_ReloadMissiles()
+    {
+        var reloadTimer = new WaitForSeconds(3.5f);
+        while (true)
+        {
+            if(_missileAmmo < _maxMissileAmmo)
+            {
+                yield return reloadTimer;
+
+                _missileAmmo++;
+                print($"Missile Ammo: {_missileAmmo}");
+                _UIManager.SetMissileAmmoText(_missileAmmo);
+            }
+            else
+            {
+                yield return null;
+            }
+        }
     }
     public int Score => _score;
 }

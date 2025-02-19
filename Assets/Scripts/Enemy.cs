@@ -29,22 +29,29 @@ public class Enemy : MonoBehaviour
     bool _movingCircular, _finishedCircle;
     float _startCircularPosition, _circleRadius, _circleProgress;
 
+    bool _isDodging, _willDodge;
     ShootState _shootState;
 
     public System.Action<Enemy> onDeath;
 
-    RaycastHit2D seePlayer, seePowerUp;
+    RaycastHit2D seePlayer, seePowerUp, _seeLaser;
     int _playerMask;
     int _powerUpMask;
+    int _laserMask;
 
     private void Awake()
     {
         _playerMask = LayerMask.GetMask("Player");
         _powerUpMask = LayerMask.GetMask("Powerup");
+        _laserMask = LayerMask.GetMask("Laser");
 
         _baseSpeed = _speed;
         _manager = FindObjectOfType<UIManager>();
         StartCoroutine(CO_Shoot());
+
+        int willDodge = Random.Range(0, 10);
+        _willDodge = willDodge <= 3;
+        
 
         int randomShield = Random.Range(0, 2);
         if(randomShield == 1)
@@ -52,8 +59,7 @@ public class Enemy : MonoBehaviour
             _shield.gameObject.SetActive(true);
             _isShielded = true;
         }
-            
-
+        
         int randomShootState = Random.Range(0, 2);
         _shootState = (ShootState)randomShootState;
 
@@ -70,15 +76,19 @@ public class Enemy : MonoBehaviour
 
         _playerPosition = GameManager.Instance.PlayerTransform.position;
 
-        seePlayer = Physics2D.Raycast(transform.position, Vector2.down, 3, _playerMask);
+        HandleSight();
 
-        seePowerUp = Physics2D.Raycast(transform.position, Vector2.down, 3, _powerUpMask);
-
-        //This line of code is simply to draw the line of sight. This is not necessary
-        Debug.DrawRay(transform.position, Vector2.down * 3, Color.red );
+        bool playerLaserFound = _seeLaser && !_seeLaser.collider.CompareTag($"Enemy Laser");
 
         if (seePlayer)
             _speed = _baseSpeed * 1.5f;
+
+        if (playerLaserFound && !_isDodging && _willDodge)
+        {
+            StartCoroutine(Co_Dodge(_seeLaser.collider.transform.position));
+        }
+        else if (_isDodging)
+            return;
 
         switch (_movementState)
         {
@@ -107,6 +117,14 @@ public class Enemy : MonoBehaviour
             CalculateCircularMovement();
             _speed = _baseSpeed;
         }
+    }
+    private void HandleSight()
+    {
+        seePlayer = Physics2D.Raycast(transform.position, Vector2.down, 3, _playerMask);
+
+        seePowerUp = Physics2D.Raycast(transform.position, Vector2.down, 3, _powerUpMask);
+
+        _seeLaser = Physics2D.CircleCast(transform.position, .8f, Vector2.down, 3, _laserMask);
     }
 
     private void MoveDiagonal()
@@ -167,8 +185,6 @@ public class Enemy : MonoBehaviour
     {
         if (other.CompareTag("Enemy Laser")) return;
 
-        
-
         if (other.TryGetComponent(out Player player))
         {
             if (_isShielded)
@@ -190,10 +206,22 @@ public class Enemy : MonoBehaviour
                 Destroy(laser.gameObject);
                 return;
             }
-            print("Destroying Laser");
             _manager.UpdateScore(_scoreReward);
             Destroy(laser.gameObject);
             Destroy();            
+        }
+        else if (other.TryGetComponent(out Missile missile))
+        {
+            if (_isShielded)
+            {
+                _isShielded = false;
+                _shield.gameObject.SetActive(false);
+                missile.Destroy();
+                return;
+            }
+            _manager.UpdateScore(_scoreReward);
+            missile.Destroy();
+            Destroy();
         }
     }
 
@@ -274,6 +302,8 @@ public class Enemy : MonoBehaviour
     {
         Missile missile = Instantiate(_missilePrefab, transform.position,
             Quaternion.Euler(0,0,180));
+
+        missile.SetOnPlayer(true);
     }
 
     private void CalculateDiagonalDirection()
@@ -302,6 +332,43 @@ public class Enemy : MonoBehaviour
         int randDirection = Random.Range(0, 2);
         _circularDirection.x = randDirection == 0 ? 1 : -1;
         _circleProgress = 0;
+    }
+
+    private IEnumerator Co_Dodge(Vector3 position)
+    {
+        _isDodging = true;
+
+        float dir = 0;
+        if (transform.position.x > position.x)
+            dir = 1;
+        else
+            dir = -1;
+
+        Vector3 startPos = transform.position;
+        Vector3 endPos = startPos + (Vector3.right * dir);
+        Vector3 current = startPos;
+        float lerpValue = 0;
+        while (lerpValue < 1)
+        {
+            float easeOut = EaseOutQuint(lerpValue);
+            current = Vector3.Lerp(startPos, endPos, easeOut);
+
+            lerpValue += Time.deltaTime * 2;
+            lerpValue = Mathf.Clamp01(lerpValue);
+
+            transform.position = current;
+            yield return null;
+        }
+
+        _isDodging = false;
+        _willDodge = false;
+        _movementState = MovementState.Straight;
+        yield return new WaitForSeconds(.35f);
+    }
+
+    private float EaseOutQuint(float lerpValue)
+    {
+        return 1 - Mathf.Pow(1 - lerpValue, 5);
     }
 }
 

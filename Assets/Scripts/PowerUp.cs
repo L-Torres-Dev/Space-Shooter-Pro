@@ -72,7 +72,7 @@ public class PowerUp : MonoBehaviour
             Destroy(laser.gameObject);
             Destroy(this.gameObject);
         }
-        else if (collision.TryGetComponent(out Missile missile))
+        else if (collision.TryGetComponent(out Missile missile) && collision.CompareTag("Enemy Laser"))
         {
             missile.Destroy();
             Destroy(this.gameObject);

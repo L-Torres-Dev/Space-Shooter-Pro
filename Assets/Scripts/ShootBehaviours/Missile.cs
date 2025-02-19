@@ -9,20 +9,35 @@ public class Missile : MonoBehaviour
     [SerializeField] Vector2 currentAngleV;
     [SerializeField] Vector2 directionGoal;
     
-    Transform player;
-    bool homingOnPlayer;
+    Transform _player, _enemy, _target;
+    bool _homingOnPlayer;
 
-    int playerMask = 0b_0000_0000_0000_0000_0000_0010_0000_0000;
-    int enemyMask = 0b_0000_0000_0000_0000_0000_0100_0000_0000;
-    private void Start()
+    float _turnSpeed = 23;
+    float _speed = 5;
+
+    int _playerMask = 0b_0000_0000_0000_0000_0000_0010_0000_0000;
+    int _enemyMask = 0b_0000_0000_0000_0000_0000_0100_0000_0000;
+
+    public void SetOnPlayer(bool homingOnPlayer)
     {
-        Collider2D hit = Physics2D.OverlapCircle(transform.position, 50, playerMask);
-
+        print($"Setting Player");
         Transform player = GameManager.Instance.PlayerTransform;
-        if (player != null)
+        if (homingOnPlayer)
         {
-            this.player = player.transform;
-            homingOnPlayer = true;
+            _turnSpeed = 23;
+            _speed = 5;
+            this._player = player.transform;
+            _target = _player;
+            _homingOnPlayer = homingOnPlayer;
+        }
+        else
+        {
+            _turnSpeed = 40;
+            _speed = 7;
+            FindClosestEnemy();            
+
+            tag = "Untagged";
+            _target = _enemy;
         }
     }
 
@@ -34,18 +49,19 @@ public class Missile : MonoBehaviour
 
     private void Update()
     {
-        if (homingOnPlayer && player)
+        if (!_homingOnPlayer)
+            FindClosestEnemy();
+
+        if (_target)
         {
-            Vector2 direction = GetDirection(player.position, transform.position);
+            Vector2 direction = GetDirection(_target.position, transform.position);
             
             if(transform.position.y > -4f)
-                Rotate(direction, 23);
+                Rotate(direction, _turnSpeed);
 
             Vector3 moveDir = GetVector2FromAngle(transform.rotation.eulerAngles.z + 90);
 
-            transform.position += moveDir * 5 * Time.deltaTime;
-
-            
+            transform.position += moveDir * _speed * Time.deltaTime;
         }
 
         if (Mathf.Abs(transform.position.x) > 11f)
@@ -66,5 +82,27 @@ public class Missile : MonoBehaviour
 
         transform.rotation = Quaternion.RotateTowards(transform.rotation, goal, Time.deltaTime * speed);
 
+    }
+
+    private void FindClosestEnemy()
+    {
+        Collider2D[] enemyHitAll = Physics2D.OverlapCircleAll(transform.position, 50, _enemyMask);
+
+        Collider2D enemyHit = null;
+        float sqrdDistance = float.MaxValue;
+        foreach (var hit in enemyHitAll)
+        {
+            float current = GetDelta(hit.gameObject.transform.position, transform.position).sqrMagnitude;
+
+            if (current < sqrdDistance)
+                enemyHit = hit;
+        }
+
+        if (enemyHit)
+        {
+            print($"Enemy Sighted: {enemyHit.gameObject.transform.position}");
+
+            _enemy = enemyHit.gameObject.transform;
+        }
     }
 }

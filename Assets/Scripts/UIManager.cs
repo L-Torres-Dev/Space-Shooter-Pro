@@ -10,6 +10,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] TMP_Text _gameOverText;
     [SerializeField] TMP_Text _restartText;
     [SerializeField] TMP_Text _ammoText;
+    [SerializeField] TMP_Text _missileAmmoText;
     [SerializeField] TMP_Text _waveText;
     [SerializeField] Image _livesImage;
     [SerializeField] Sprite[] _liveSprites;
@@ -36,6 +37,11 @@ public class UIManager : MonoBehaviour
     public void SetAmmoText(int ammo)
     {
         _ammoText.SetText($"{ammo}x");
+    }
+
+    public void SetMissileAmmoText(int ammo)
+    {
+        _missileAmmoText.SetText($"{ammo}x");
     }
     public void GameOver()
     {
