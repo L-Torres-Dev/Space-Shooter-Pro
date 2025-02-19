@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 2547696569927023401}
   - component: {fileID: 2547696569927023380}
   - component: {fileID: 2547696569927023382}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Triple Shot PowerUp
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -49,6 +49,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _speed: 3
   _verticalBound: -7.5
+  _powerID: 0
 --- !u!212 &2547696569927023402
 SpriteRenderer:
   m_ObjectHideFlags: 0

@@ -34,7 +34,7 @@ public class Missile : MonoBehaviour
 
     private void Update()
     {
-        if (homingOnPlayer)
+        if (homingOnPlayer && player)
         {
             Vector2 direction = GetDirection(player.position, transform.position);
             

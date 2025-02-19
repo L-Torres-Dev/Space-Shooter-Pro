@@ -32,11 +32,15 @@ public class Enemy : MonoBehaviour
     ShootState _shootState;
 
     public System.Action<Enemy> onDeath;
+
+    RaycastHit2D seePlayer, seePowerUp;
     int _playerMask;
+    int _powerUpMask;
 
     private void Awake()
     {
         _playerMask = LayerMask.GetMask("Player");
+        _powerUpMask = LayerMask.GetMask("Powerup");
 
         _baseSpeed = _speed;
         _manager = FindObjectOfType<UIManager>();
@@ -66,12 +70,14 @@ public class Enemy : MonoBehaviour
 
         _playerPosition = GameManager.Instance.PlayerTransform.position;
 
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, 3, _playerMask);
+        seePlayer = Physics2D.Raycast(transform.position, Vector2.down, 3, _playerMask);
+
+        seePowerUp = Physics2D.Raycast(transform.position, Vector2.down, 3, _powerUpMask);
 
         //This line of code is simply to draw the line of sight. This is not necessary
         Debug.DrawRay(transform.position, Vector2.down * 3, Color.red );
 
-        if (hit)
+        if (seePlayer)
             _speed = _baseSpeed * 1.5f;
 
         switch (_movementState)
@@ -221,11 +227,14 @@ public class Enemy : MonoBehaviour
         {
             yield return new WaitForSeconds(fireRate);
 
-            while (transform.position.y < -6f)
-                yield return null;
-
             while (transform.position.y > 4.85f)
                 yield return null;
+
+            if (seePowerUp)
+            {
+                ShootLaser();
+                continue;
+            }
 
             switch (_shootState)
             {
@@ -247,7 +256,17 @@ public class Enemy : MonoBehaviour
 
         _laserAudioSource.Play();
         laser.tag = "Enemy Laser";
-        laser.ReverseSpeed();
+
+        if(transform.position.y <= -3f)
+        {
+            Vector2 direction = GameManager.Instance.PlayerTransform.position - transform.position;
+            laser.SetDirection(direction);
+        }
+        else
+        {
+            laser.ReverseSpeed();
+        }
+        
         
     }
 

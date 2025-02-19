@@ -36,4 +36,18 @@ public class Laser : MonoBehaviour
     {
         _laserSpeed *= -1;
     }
+    public void SetDirection(Vector2 direction)
+    {
+        print($"Setting direction: {direction}");
+        this.direction = direction.normalized;
+
+        _angle = Utility.VectorExtensions.GetVector2Angle(direction);
+        float offsetAngle = _angle - 90;
+        float angle = Mathf.Deg2Rad * _angle;
+        float x = Mathf.Cos(angle);
+        float y = Mathf.Sin(angle);
+
+        transform.rotation = Quaternion.Euler(new Vector3(0, 0, offsetAngle));
+
+    }
 }

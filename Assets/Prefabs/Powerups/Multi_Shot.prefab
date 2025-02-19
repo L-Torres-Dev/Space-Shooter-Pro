@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 7082895662017190828}
   - component: {fileID: 7082895662017190829}
   - component: {fileID: 7082895662017190834}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Multi_Shot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
