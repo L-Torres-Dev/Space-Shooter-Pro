@@ -285,7 +285,7 @@ public class Enemy : MonoBehaviour
         _laserAudioSource.Play();
         laser.tag = "Enemy Laser";
 
-        if(transform.position.y <= -3f)
+        if(transform.position.y <= -3f && GameManager.Instance.PlayerTransform)
         {
             Vector2 direction = GameManager.Instance.PlayerTransform.position - transform.position;
             laser.SetDirection(direction);

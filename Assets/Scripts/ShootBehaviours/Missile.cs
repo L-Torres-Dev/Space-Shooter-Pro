@@ -12,6 +12,7 @@ public class Missile : MonoBehaviour
     Transform _player, _enemy, _target;
     bool _homingOnPlayer;
 
+    float _homingRadius = 10;
     float _turnSpeed = 23;
     float _speed = 5;
 
@@ -20,18 +21,18 @@ public class Missile : MonoBehaviour
 
     public void SetOnPlayer(bool homingOnPlayer)
     {
-        print($"Setting Player");
         Transform player = GameManager.Instance.PlayerTransform;
-        if (homingOnPlayer)
+        if (homingOnPlayer && player)
         {
             _turnSpeed = 23;
             _speed = 5;
             this._player = player.transform;
             _target = _player;
-            _homingOnPlayer = homingOnPlayer;
+            _homingOnPlayer = true;
         }
         else
         {
+            _homingOnPlayer = false;
             _turnSpeed = 40;
             _speed = 7;
             FindClosestEnemy();            
@@ -49,11 +50,10 @@ public class Missile : MonoBehaviour
 
     private void Update()
     {
-        if (!_homingOnPlayer)
-            FindClosestEnemy();
-
+        FindClosestEnemy();
         if (_target)
         {
+            Debug.DrawLine(transform.position, _target.position, Color.red);
             Vector2 direction = GetDirection(_target.position, transform.position);
             
             if(transform.position.y > -4f)
@@ -86,23 +86,47 @@ public class Missile : MonoBehaviour
 
     private void FindClosestEnemy()
     {
-        Collider2D[] enemyHitAll = Physics2D.OverlapCircleAll(transform.position, 50, _enemyMask);
+        if (_homingOnPlayer) return;
+
+        Collider2D[] enemyHitAll = Physics2D.OverlapCircleAll(transform.position, _homingRadius, _enemyMask);
 
         Collider2D enemyHit = null;
         float sqrdDistance = float.MaxValue;
+        Vector3 hitPosition = Vector3.zero;
+        Vector3 myPosition = transform.position;
         foreach (var hit in enemyHitAll)
         {
-            float current = GetDelta(hit.gameObject.transform.position, transform.position).sqrMagnitude;
+            hitPosition = hit.gameObject.transform.position;
+            if (myPosition.y > hitPosition.y)
+            {
+               continue;
+            }
+
+            float current = SqrdDistance(hit.gameObject.transform.position, myPosition);
 
             if (current < sqrdDistance)
+            {
+                sqrdDistance = current;
                 enemyHit = hit;
+            }                
         }
 
-        if (enemyHit)
+        if (enemyHit == null) return;
+        bool isHit = enemyHit;
+        bool sameEnemy = enemyHit.gameObject.transform == _target;
+        if (!sameEnemy)
         {
-            print($"Enemy Sighted: {enemyHit.gameObject.transform.position}");
-
             _enemy = enemyHit.gameObject.transform;
+            _target = _enemy.gameObject.transform;
         }
+            
+    }
+
+    private float SqrdDistance(Vector3 a, Vector3 b)
+    {
+        float num = a.x - b.x;
+        float num2 = a.y - b.y;
+        float num3 = a.z - b.z;
+        return num * num + num2 * num2 + num3 * num3;
     }
 }
